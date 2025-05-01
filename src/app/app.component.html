@@ -1,4 +1,4 @@
 <!-- <div class="flex justify-center mx-3"> -->
   <app-address-form (addressSelectedOutput)="onAddressSelected($event)"></app-address-form>
 <!-- </div> -->
-<app-weather-info [address]="defaultAddress"></app-weather-info>
+<app-weather-info [_address]="addressForChild"></app-weather-info>
