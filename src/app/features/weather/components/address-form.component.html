@@ -1,0 +1,10 @@
+<div class="card flex justify-center">
+  <form [formGroup]="form">
+    <p-autocomplete
+      formControlName="address"
+      [suggestions]="suggestions"
+      (onSelect)="onSelectedAddress($event)"
+      field="name"
+    />
+  </form>
+</div>
