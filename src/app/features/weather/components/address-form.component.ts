@@ -18,8 +18,9 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
-import { AddressViewModel } from '../../../core/services/models/address-models';
+import { AddressViewModel } from '../../../core/models/address-models';
 import { AddressViewModelService } from '../../../core/view-model-services/address-view-model.service';
+import { AddressService } from '../../../core/services/address.service';
 
 @Component({
   selector: 'app-address-form',
@@ -36,7 +37,8 @@ import { AddressViewModelService } from '../../../core/view-model-services/addre
 })
 export class AddressFormComponent {
   private vms = inject(AddressViewModelService);
-  private fb = inject(FormBuilder)
+  private fb = inject(FormBuilder);
+  private service = inject(AddressService);
 
   @Output() addressSelectedOutput = new EventEmitter<AddressViewModel>();
 
@@ -52,6 +54,10 @@ export class AddressFormComponent {
       address: new FormControl(),
     });
     this.createSubscriptions();
+
+    //default address
+    const addressForChild: AddressViewModel = new AddressViewModel({id: 100, address: 'Via Carlo Citerni, 43044 Parma PR, Italia', latitude: 44.7813559, longitude: 10.2603056});
+    this.service.setAddress(addressForChild!)
   }
 
   createSubscriptions() {
@@ -90,6 +96,8 @@ export class AddressFormComponent {
   onSelectedAddress($event: AutoCompleteSelectEvent) {
     const addressCode = $event.value.code;
     const address = this.addressList.find(add => add.id?.toString() === addressCode);
-    this.addressSelectedOutput.emit(address);
+    // this.addressSelectedOutput.emit(address);
+    this.service.setAddress(address!)
+
   }
 }

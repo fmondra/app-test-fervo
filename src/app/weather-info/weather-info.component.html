@@ -1,4 +1,8 @@
-<ng-container *ngIf="_address">
-    <p>Information retrieved for address: {{_address.address}}</p>
+<!-- <ng-template *ngIf="temperatureChartModel">
+  <app-chart [_chartModel]="temperatureChartModel"></app-chart>
+</ng-template> -->
 
+
+<ng-container *ngFor="let chart of chartList">
+    <app-chart [chartModel]="chart"></app-chart>
 </ng-container>

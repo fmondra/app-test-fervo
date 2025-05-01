@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { AddressRestService } from "../rest-services/address-rest.service";
 import { map, Observable, of } from "rxjs";
-import { AddressModel, AddressViewModel, ResultModel } from "../services/models/address-models";
+import { AddressModel, AddressViewModel, ResultModel } from "../models/address-models";
 
 @Injectable({providedIn: 'root'})
 export class AddressViewModelService {

@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { AddressModel } from "../services/models/address-models";
+import { AddressModel } from "../models/address-models";
 
 @Injectable({providedIn: 'root'})
 export class AddressRestService {

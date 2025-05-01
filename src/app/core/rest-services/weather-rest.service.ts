@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { WeatherModel } from "../services/models/weather-models";
+import { WeatherModel } from "../models/weather-models";
 
 @Injectable({providedIn: 'root'})
 export class WheaterRestService {

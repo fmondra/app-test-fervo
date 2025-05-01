@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { WheaterRestService } from "../rest-services/weather-rest.service";
-import { WeatherModel, WeatherViewModel } from "../services/models/weather-models";
+import { WeatherModel, WeatherViewModel } from "../models/weather-models";
 import { catchError, map, Observable, of } from "rxjs";
 
 @Injectable({providedIn: 'root'})
