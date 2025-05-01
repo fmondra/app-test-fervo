@@ -8,7 +8,7 @@ import {
 } from '../core/models/weather-models';
 import { ChartComponent } from '../utils/chart/chart.component';
 import { AddressService } from '../core/services/address.service';
-import { filter } from 'rxjs';
+import { filter, tap } from 'rxjs';
 import { IChartModel } from '../utils/chart/chart-models';
 
 @Component({
@@ -21,17 +21,6 @@ export class WeatherInfoComponent {
   private vms = inject(WheaterViewModelService);
   private service = inject(AddressService);
 
-  // @Input() set _address(address: AddressViewModel){
-  //   // setto date di default
-  //   const today = new Date();
-  //   const sevenDaysAgo = new Date();
-  //   sevenDaysAgo.setDate(today.getDate() - 7);
-
-  //   this.getWeatherInfoByDates(address, sevenDaysAgo, today);
-  // }
-
-  temperatureChartModel: IChartModel | undefined;
-
   chartList: IChartModel[] = [];
 
   constructor() {
@@ -41,7 +30,10 @@ export class WeatherInfoComponent {
   setSubscriptions() {
     this.service
       .getAddress()
-      .pipe(filter((address?: AddressViewModel | null) => !!address))
+      .pipe(
+        filter((address?: AddressViewModel | null) => !!address),
+        tap((x) => (this.chartList = []))
+      )
       .subscribe((address: AddressViewModel) => {
         const today = new Date();
         const sevenDaysAgo = new Date();
@@ -76,6 +68,13 @@ export class WeatherInfoComponent {
             );
 
             const temperatureChartModel: IChartModel = {
+              title: {
+                text: 'Last 7 days temperature',
+              },
+              subtitle: {
+                text: 'Fonte: <a href="https://open-meteo.com/en/docs/historical-forecast-api" target="_blank">Open Meteo</a>',
+                useHTML: true,
+              },
               xAxis: {
                 categories: datesList,
               },
@@ -92,9 +91,68 @@ export class WeatherInfoComponent {
                 },
               ],
             };
-            console.log('creato chart model -> ', temperatureChartModel);
-            this.temperatureChartModel = temperatureChartModel;
-            this.chartList.push(temperatureChartModel);
+
+            // lista dei valori neve
+            const showFallList: number[] = response.dailyData.map(
+              (data: DailyWeatherViewModel) => data.snowfall ?? 0
+            );
+
+            const showFallChartModel: IChartModel = {
+              title: {
+                text: 'Last 7 days snow fall',
+              },
+              subtitle: {
+                text: 'Fonte: <a href="https://open-meteo.com/en/docs/historical-forecast-api" target="_blank">Open Meteo</a>',
+                useHTML: true,
+              },
+              xAxis: {
+                categories: datesList,
+              },
+              yAxis: {
+                title: {
+                  text: `Temperature`,
+                },
+              },
+              series: [
+                {
+                  name: '',
+                  type: 'line',
+                  data: showFallList,
+                },
+              ],
+            };
+
+            // lista dei valori della temperatura
+            const preciList: number[] = response.dailyData.map(
+              (data: DailyWeatherViewModel) => data.precipitation ?? 0
+            );
+
+            const precipitationChartModel: IChartModel = {
+              title: {
+                text: 'Last 7 days precipitation',
+              },
+              subtitle: {
+                text: 'Fonte: <a href="https://open-meteo.com/en/docs/historical-forecast-api" target="_blank">Open Meteo</a>',
+                useHTML: true,
+              },
+              xAxis: {
+                categories: datesList,
+              },
+              yAxis: {
+                title: {
+                  text: `Temperature`,
+                },
+              },
+              series: [
+                {
+                  name: '',
+                  type: 'line',
+                  data: preciList,
+                },
+              ],
+            };
+
+            this.chartList = [temperatureChartModel, precipitationChartModel, showFallChartModel];
           }
         },
       });
