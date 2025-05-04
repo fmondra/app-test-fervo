@@ -1,8 +1,6 @@
-<!-- <ng-template *ngIf="temperatureChartModel">
-  <app-chart [_chartModel]="temperatureChartModel"></app-chart>
-</ng-template> -->
-
-
+<div *ngIf="currentAddress">
+  <p>Results for address: {{currentAddress.address}}</p>
+</div>
 <ng-container *ngFor="let chart of chartList">
     <app-chart [chartModel]="chart"></app-chart>
 </ng-container>

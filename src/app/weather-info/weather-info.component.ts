@@ -22,6 +22,7 @@ export class WeatherInfoComponent {
   private service = inject(AddressService);
 
   chartList: IChartModel[] = [];
+  currentAddress: AddressViewModel | undefined;
 
   constructor() {
     this.setSubscriptions();
@@ -38,7 +39,7 @@ export class WeatherInfoComponent {
         const today = new Date();
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(today.getDate() - 7);
-
+        this.currentAddress = address;
         this.getWeatherInfoByDates(address, sevenDaysAgo, today);
       });
   }
