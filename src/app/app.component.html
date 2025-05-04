@@ -1,17 +1,10 @@
 <div class="mx-3">
   <div class="grid grid-cols-12 items-center gap-4 px-4 my-5">
     <div class="col-span-2"></div>
-    <!-- margine sinistro -->
-
     <div class="col-span-8">
-      <app-address-form
-        (addressSelectedOutput)="onAddressSelected($event)"
-      ></app-address-form>
+      <app-address-form></app-address-form>
     </div>
-
     <div class="col-span-2"></div>
-    <!-- margine destro -->
   </div>
-
   <app-weather-info></app-weather-info>
 </div>

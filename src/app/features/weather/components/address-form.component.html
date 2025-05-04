@@ -7,9 +7,12 @@
     inputId="addressInput"
     formControlName="address"
     [suggestions]="suggestions"
+    [ngClass]="getAddressValidator() ? 'ng-invalid ng-dirty' : ''"
     (onSelect)="onSelectedAddress($event)"
     field="name"
     styleClass="w-full"
     [inputStyle]="{ width: '100%' }"
   />
+  <p *ngIf="getAddressValidator()" class="error-message">Required field!</p>
+
 </form>

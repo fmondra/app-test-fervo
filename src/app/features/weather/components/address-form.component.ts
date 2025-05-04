@@ -6,6 +6,7 @@ import {
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { AutoComplete, AutoCompleteSelectEvent } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
@@ -17,6 +18,7 @@ import {
   Subject,
   switchMap,
   takeUntil,
+  tap,
 } from 'rxjs';
 import { AddressViewModel } from '../../../core/models/address-models';
 import { AddressViewModelService } from '../../../core/view-model-services/address-view-model.service';
@@ -40,9 +42,6 @@ export class AddressFormComponent {
   private fb = inject(FormBuilder);
   private service = inject(AddressService);
 
-  @Output() addressSelectedOutput = new EventEmitter<AddressViewModel>();
-
-
   form: FormGroup;
   addressList: AddressViewModel[] = [];
   suggestions: { name: string; code: string }[] = [];
@@ -51,13 +50,9 @@ export class AddressFormComponent {
 
   constructor() {
     this.form = this.fb.group({
-      address: new FormControl(),
+      address: new FormControl(null, Validators.required),
     });
     this.createSubscriptions();
-
-    //default address
-    const addressForChild: AddressViewModel = new AddressViewModel({id: 100, address: 'Via Carlo Citerni, 43044 Parma PR, Italia', latitude: 44.7813559, longitude: 10.2603056});
-    this.service.setAddress(addressForChild!)
   }
 
   createSubscriptions() {
@@ -65,11 +60,14 @@ export class AddressFormComponent {
       .get('address')
       ?.valueChanges.pipe(
         takeUntil(this.destroy$),
+        tap(val => {
+          if(!val) this.service.clearAddress();
+        }),
         filter((val) => val && val.length > 3),
         distinctUntilChanged(),
         debounceTime(200),
         switchMap((val: string) => {
-          // valorizzo la lista dei suggerimenti
+          // Setting values retrieved from API as suggestions
           return this.vms.getAddressesListByName(val).pipe(
             map((list: AddressViewModel[]) => {
               this.addressList = list;
@@ -84,7 +82,6 @@ export class AddressFormComponent {
       )
       .subscribe({
         next: (val) => {
-          // console.log('val ', val);
         },
       });
   }
@@ -96,8 +93,19 @@ export class AddressFormComponent {
   onSelectedAddress($event: AutoCompleteSelectEvent) {
     const addressCode = $event.value.code;
     const address = this.addressList.find(add => add.id?.toString() === addressCode);
-    // this.addressSelectedOutput.emit(address);
     this.service.setAddress(address!)
+  }
 
+  getAddressValidator(){
+    return this.form.get('address') && !this.form.get('address')?.valid && this.form.get('address')?.touched;
+  }
+
+  resetAddress(){
+    this.form.get('address')?.reset('');
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePicker } from 'primeng/datepicker';
-import { filter, tap } from 'rxjs';
+import { filter, Subject, takeUntil, tap } from 'rxjs';
 import { AddressViewModel } from '../core/models/address-models';
 import {
   DailyWeatherViewModel,
@@ -26,20 +26,22 @@ export class WeatherInfoComponent {
   chartList: IChartModel[] = [];
   currentAddress: AddressViewModel | undefined;
   weatherData: WeatherViewModel | undefined;
-  
+
   today = new Date();
 
   startDate?: Date;
   endDate?: Date;
 
+  destroy$ = new Subject<void>();
+
   constructor() {
     const today = new Date();
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(today.getDate() - 7);
-  
+
     this.startDate = sevenDaysAgo;
     this.endDate = today;
-  
+
     this.setSubscriptions();
   }
 
@@ -47,6 +49,13 @@ export class WeatherInfoComponent {
     this.service
       .getAddress()
       .pipe(
+        takeUntil(this.destroy$),
+        tap((address) => {
+          if (!address) {
+            this.currentAddress = undefined;
+            this.chartList = [];
+          }
+        }),
         filter((address?: AddressViewModel | null) => !!address),
         tap((x) => (this.chartList = []))
       )
@@ -67,7 +76,9 @@ export class WeatherInfoComponent {
       .subscribe({
         next: (response?: WeatherViewModel) => {
           if (response) {
-            console.log(`dati meteo ricevuti per: ${this.currentAddress!.address}`);
+            console.log(
+              `dati meteo ricevuti per: ${this.currentAddress!.address}`
+            );
             console.log(response);
 
             this.weatherData = response;
@@ -96,7 +107,7 @@ export class WeatherInfoComponent {
               },
               yAxis: {
                 title: {
-                  text: `Temperature`,
+                  text: `Temperature (°C)`,
                 },
               },
               series: [
@@ -127,7 +138,7 @@ export class WeatherInfoComponent {
               },
               yAxis: {
                 title: {
-                  text: `Snow fall`,
+                  text: `Snow fall (mm)`,
                 },
               },
               series: [
@@ -158,7 +169,7 @@ export class WeatherInfoComponent {
               },
               yAxis: {
                 title: {
-                  text: `Precipitation`,
+                  text: `Precipitation (mm)`,
                 },
               },
               series: [
@@ -197,5 +208,11 @@ export class WeatherInfoComponent {
     link.click();
 
     URL.revokeObjectURL(url);
+  }
+
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

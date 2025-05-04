@@ -12,10 +12,4 @@ import { WeatherInfoComponent } from "./weather-info/weather-info.component";
 })
 export class AppComponent {
   title = 'app-test-fervo-group';
-
-
-  onAddressSelected($event: AddressViewModel){
-    // console.log('address received from child ', $event);
-    // this.addressForChild = $event;
-  }
 }
