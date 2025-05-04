@@ -107,7 +107,7 @@ export class WeatherInfoComponent {
               },
               yAxis: {
                 title: {
-                  text: `Temperature (°C)`,
+                  text: `Temperature (${response.dailyUnits?.temperatureUnit})`,
                 },
               },
               series: [
@@ -119,15 +119,15 @@ export class WeatherInfoComponent {
               ],
             };
 
-            // Snow fall values list
-            const showFallList: number[] = response.dailyData.map(
-              (data: DailyWeatherViewModel) => data.snowfall ?? 0
+            // Humidity values list
+            const humidityList: number[] = response.dailyData.map(
+              (data: DailyWeatherViewModel) => data.humidity ?? 0
             );
 
-            // Creating model for snow fall chart
-            const showFallChartModel: IChartModel = {
+            // Creating model for humidity chart
+            const humidityChartModel: IChartModel = {
               title: {
-                text: 'Snow fall',
+                text: 'Humidity',
               },
               subtitle: {
                 text: 'Fonte: <a href="https://open-meteo.com/en/docs/historical-forecast-api" target="_blank">Open Meteo</a>',
@@ -138,27 +138,27 @@ export class WeatherInfoComponent {
               },
               yAxis: {
                 title: {
-                  text: `Snow fall (mm)`,
+                  text: `Humidity (${response.dailyUnits?.humidityUnit})`,
                 },
               },
               series: [
                 {
                   name: '',
                   type: 'line',
-                  data: showFallList,
+                  data: humidityList,
                 },
               ],
             };
 
-            // Precipitation values list
-            const preciList: number[] = response.dailyData.map(
-              (data: DailyWeatherViewModel) => data.precipitation ?? 0
+            // Wind speed values list
+            const windList: number[] = response.dailyData.map(
+              (data: DailyWeatherViewModel) => data.windSpeed ?? 0
             );
 
             // Creating model for precipitation chart
-            const precipitationChartModel: IChartModel = {
+            const windSpeedChartModel: IChartModel = {
               title: {
-                text: 'Precipitation',
+                text: 'Wind Speed',
               },
               subtitle: {
                 text: 'Fonte: <a href="https://open-meteo.com/en/docs/historical-forecast-api" target="_blank">Open Meteo</a>',
@@ -169,22 +169,22 @@ export class WeatherInfoComponent {
               },
               yAxis: {
                 title: {
-                  text: `Precipitation (mm)`,
+                  text: `Wind speed (mm)`,
                 },
               },
               series: [
                 {
                   name: '',
                   type: 'line',
-                  data: preciList,
+                  data: windList,
                 },
               ],
             };
 
             this.chartList = [
               temperatureChartModel,
-              precipitationChartModel,
-              showFallChartModel,
+              windSpeedChartModel,
+              humidityChartModel,
             ];
           }
         },
