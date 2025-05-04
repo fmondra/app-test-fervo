@@ -1,10 +1,15 @@
-<div class="card flex justify-center">
-  <form [formGroup]="form">
-    <p-autocomplete
-      formControlName="address"
-      [suggestions]="suggestions"
-      (onSelect)="onSelectedAddress($event)"
-      field="name"
-    />
-  </form>
-</div>
+<form [formGroup]="form">
+  <label for="addressInput" class="block text-sm text-white mb-2">
+    Enter the address you're looking for
+  </label>
+
+  <p-autoComplete
+    inputId="addressInput"
+    formControlName="address"
+    [suggestions]="suggestions"
+    (onSelect)="onSelectedAddress($event)"
+    field="name"
+    styleClass="w-full"
+    [inputStyle]="{ width: '100%' }"
+  />
+</form>
