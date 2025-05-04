@@ -1,17 +1,45 @@
 <div *ngIf="currentAddress">
-  <p>Results for address: {{currentAddress.address}}</p>
+  <p>Results for address: {{ currentAddress.address }}</p>
+  <div class="flex flex-col md:flex-row items-center gap-4 my-4">
+    <label class="text-white">Start date:</label>
+    <p-datepicker
+      [(ngModel)]="startDate"
+      [iconDisplay]="'input'"
+      [showIcon]="true"
+      inputId="icondisplay"
+      dateFormat="dd/mm/yy"
+      [maxDate]="today"
+    />
+
+    <label class="text-white">End date:</label>
+    <p-datepicker
+      [(ngModel)]="endDate"
+      [iconDisplay]="'input'"
+      [showIcon]="true"
+      inputId="icondisplay"
+      dateFormat="dd/mm/yy"
+      [maxDate]="today"
+    />
+
+    <button
+      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+      (click)="getWeatherInfoByDates()"
+    >
+      Search
+    </button>
+
+    <button
+    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+    (click)="downloadWeatherData()"
+  >
+    Download
+  </button>
+  </div>
 </div>
+
 <ng-container *ngFor="let chart of chartList">
   <div class="my-2">
     <app-chart [chartModel]="chart"></app-chart>
   </div>
 </ng-container>
 
-<div class="text-right my-4">
-  <button
-    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-    (click)="downloadWeatherData()"
-  >
-    Download JSON
-  </button>
-</div>

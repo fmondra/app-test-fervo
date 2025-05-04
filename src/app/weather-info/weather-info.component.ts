@@ -1,19 +1,21 @@
-import { Component, inject, Input } from '@angular/core';
-import { AddressViewModel } from '../core/models/address-models';
 import { CommonModule } from '@angular/common';
-import { WheaterViewModelService } from '../core/view-model-services/weather-view-model.service';
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { DatePicker } from 'primeng/datepicker';
+import { filter, tap } from 'rxjs';
+import { AddressViewModel } from '../core/models/address-models';
 import {
   DailyWeatherViewModel,
   WeatherViewModel,
 } from '../core/models/weather-models';
-import { ChartComponent } from '../utils/chart/chart.component';
 import { AddressService } from '../core/services/address.service';
-import { filter, tap } from 'rxjs';
+import { WheaterViewModelService } from '../core/view-model-services/weather-view-model.service';
 import { IChartModel } from '../utils/chart/chart-models';
+import { ChartComponent } from '../utils/chart/chart.component';
 
 @Component({
   selector: 'app-weather-info',
-  imports: [CommonModule, ChartComponent],
+  imports: [CommonModule, ChartComponent, FormsModule, DatePicker],
   templateUrl: './weather-info.component.html',
   styleUrl: './weather-info.component.scss',
 })
@@ -24,8 +26,20 @@ export class WeatherInfoComponent {
   chartList: IChartModel[] = [];
   currentAddress: AddressViewModel | undefined;
   weatherData: WeatherViewModel | undefined;
+  
+  today = new Date();
+
+  startDate?: Date;
+  endDate?: Date;
 
   constructor() {
+    const today = new Date();
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(today.getDate() - 7);
+  
+    this.startDate = sevenDaysAgo;
+    this.endDate = today;
+  
     this.setSubscriptions();
   }
 
@@ -37,26 +51,23 @@ export class WeatherInfoComponent {
         tap((x) => (this.chartList = []))
       )
       .subscribe((address: AddressViewModel) => {
-        const today = new Date();
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(today.getDate() - 7);
         this.currentAddress = address;
-        this.getWeatherInfoByDates(address, sevenDaysAgo, today);
+        this.getWeatherInfoByDates();
       });
   }
 
-  getWeatherInfoByDates(ad: AddressViewModel, startDate: Date, endDate: Date) {
+  getWeatherInfoByDates() {
     this.vms
       .getWeatherByDatesAndCoordinates(
-        ad.latitude!,
-        ad.longitude!,
-        startDate,
-        endDate
+        this.currentAddress?.latitude!,
+        this.currentAddress?.longitude!,
+        this.startDate!,
+        this.endDate!
       )
       .subscribe({
         next: (response?: WeatherViewModel) => {
           if (response) {
-            console.log(`dati meteo ricevuti per: ${ad.address}`);
+            console.log(`dati meteo ricevuti per: ${this.currentAddress!.address}`);
             console.log(response);
 
             this.weatherData = response;
@@ -66,14 +77,15 @@ export class WeatherInfoComponent {
               (data: DailyWeatherViewModel) => data.date ?? ''
             );
 
-            // lista dei valori della temperatura
+            // Temperature values list
             const tempList: number[] = response.dailyData.map(
               (data: DailyWeatherViewModel) => data.avgTemp ?? 0
             );
 
+            // Creating model for temperature chart
             const temperatureChartModel: IChartModel = {
               title: {
-                text: 'Last 7 days temperature',
+                text: 'Temperature',
               },
               subtitle: {
                 text: 'Fonte: <a href="https://open-meteo.com/en/docs/historical-forecast-api" target="_blank">Open Meteo</a>',
@@ -96,14 +108,15 @@ export class WeatherInfoComponent {
               ],
             };
 
-            // lista dei valori neve
+            // Snow fall values list
             const showFallList: number[] = response.dailyData.map(
               (data: DailyWeatherViewModel) => data.snowfall ?? 0
             );
 
+            // Creating model for snow fall chart
             const showFallChartModel: IChartModel = {
               title: {
-                text: 'Last 7 days snow fall',
+                text: 'Snow fall',
               },
               subtitle: {
                 text: 'Fonte: <a href="https://open-meteo.com/en/docs/historical-forecast-api" target="_blank">Open Meteo</a>',
@@ -114,7 +127,7 @@ export class WeatherInfoComponent {
               },
               yAxis: {
                 title: {
-                  text: `Temperature`,
+                  text: `Snow fall`,
                 },
               },
               series: [
@@ -126,14 +139,15 @@ export class WeatherInfoComponent {
               ],
             };
 
-            // lista dei valori delle precipitazioni
+            // Precipitation values list
             const preciList: number[] = response.dailyData.map(
               (data: DailyWeatherViewModel) => data.precipitation ?? 0
             );
 
+            // Creating model for precipitation chart
             const precipitationChartModel: IChartModel = {
               title: {
-                text: 'Last 7 days precipitation',
+                text: 'Precipitation',
               },
               subtitle: {
                 text: 'Fonte: <a href="https://open-meteo.com/en/docs/historical-forecast-api" target="_blank">Open Meteo</a>',
@@ -144,7 +158,7 @@ export class WeatherInfoComponent {
               },
               yAxis: {
                 title: {
-                  text: `Temperature`,
+                  text: `Precipitation`,
                 },
               },
               series: [
@@ -156,28 +170,32 @@ export class WeatherInfoComponent {
               ],
             };
 
-            this.chartList = [temperatureChartModel, precipitationChartModel, showFallChartModel];
+            this.chartList = [
+              temperatureChartModel,
+              precipitationChartModel,
+              showFallChartModel,
+            ];
           }
         },
       });
   }
 
+  // Downloading JSON file based on retrieved data
   downloadWeatherData(): void {
     if (!this.weatherData) {
       console.warn('No weather data available to download');
       return;
     }
-  
-    const jsonData = JSON.stringify(this.weatherData, null, 2); // pretty print
+
+    const jsonData = JSON.stringify(this.weatherData, null, 2);
     const blob = new Blob([jsonData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-  
+
     const link = document.createElement('a');
     link.href = url;
     link.download = 'weather-data.json';
     link.click();
-  
+
     URL.revokeObjectURL(url);
   }
-  
 }
