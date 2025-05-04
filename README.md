@@ -1,59 +1,49 @@
-# AppTestFervo
+# Weather Data Viewer
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.9.
+This is a simple Angular application developed as part of a technical test. It allows users to search for an address, retrieve geographic coordinates using a geocoding API, and display historical weather data (temperature, humidity, wind) in chart format.
 
-## Development server
+## Main Features
 
-To start a local development server, run:
+- Address autocomplete with real-time suggestions
+- Automatic retrieval of latitude and longitude using the OpenCage Geocoding API
+- Three weather charts:
+  - Daily average temperature
+  - Humidity
+  - Wind speed
+- Option to download weather data in JSON format
+
+## Technologies Used
+
+- Angular 17 (standalone components)
+- Tailwind CSS (responsive layout)
+- PrimeNG (UI components)
+- Highcharts (dynamic chart rendering)
+- RxJS (reactive data handling)
+- OpenCage Geocoding API
+- Open-Meteo Historical API
+
+## Project Structure
+
+- `src/core/models` – TypeScript models for API responses and UI ViewModels
+- `src/core/services` – Services handling application state and HTTP calls (geocoding and weather)
+- `src/core/view-model-services` – Services that convert raw API data into UI-ready ViewModels
+- `src/components` – Standalone components (address form, weather display)
+- `src/utils/chart` – Highcharts wrapper component with custom configuration
+
+## Notes
+
+- The application uses external APIs (OpenCage, Open-Meteo) and requires an internet connection to function.
+- The OpenCage API key is currently hardcoded for simplicity. In a production setup, it should be placed in an environment variable or configuration file.
+- The layout is built with TailwindCSS, and components like the autocomplete and calendar are provided by PrimeNG.
+
+
+## How to Run the Project
+
+1. Clone the repository or copy the project locally
+2. Open a terminal in the project root folder
+3. Run the following commands:
 
 ```bash
+npm install
 ng serve
-```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
