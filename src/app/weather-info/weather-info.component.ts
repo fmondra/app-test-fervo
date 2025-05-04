@@ -23,6 +23,7 @@ export class WeatherInfoComponent {
 
   chartList: IChartModel[] = [];
   currentAddress: AddressViewModel | undefined;
+  weatherData: WeatherViewModel | undefined;
 
   constructor() {
     this.setSubscriptions();
@@ -57,6 +58,8 @@ export class WeatherInfoComponent {
           if (response) {
             console.log(`dati meteo ricevuti per: ${ad.address}`);
             console.log(response);
+
+            this.weatherData = response;
 
             // lista dei giorni
             const datesList: string[] = response.dailyData.map(
@@ -123,7 +126,7 @@ export class WeatherInfoComponent {
               ],
             };
 
-            // lista dei valori della temperatura
+            // lista dei valori delle precipitazioni
             const preciList: number[] = response.dailyData.map(
               (data: DailyWeatherViewModel) => data.precipitation ?? 0
             );
@@ -158,4 +161,23 @@ export class WeatherInfoComponent {
         },
       });
   }
+
+  downloadWeatherData(): void {
+    if (!this.weatherData) {
+      console.warn('No weather data available to download');
+      return;
+    }
+  
+    const jsonData = JSON.stringify(this.weatherData, null, 2); // pretty print
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+  
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'weather-data.json';
+    link.click();
+  
+    URL.revokeObjectURL(url);
+  }
+  
 }
